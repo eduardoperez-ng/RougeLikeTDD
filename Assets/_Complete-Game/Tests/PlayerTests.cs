@@ -1,8 +1,11 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using Completed;
+using Completed.Interfaces;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace Tests
 {
@@ -26,8 +29,28 @@ namespace Tests
         }
         
         // TODO: add test cases
-        // TODO: test 1 when player moves lose energy
         // TODO: test 2 when player moves movement list is updated.
         // TODO: add shadow.
+        
+        [UnityTest]
+        public IEnumerator AttemptMoveRemovesOneFoodUnit()
+        {
+            var playerGameObject = new GameObject("PlayerGameObject");
+            playerGameObject.AddComponent<BoxCollider2D>();
+            playerGameObject.AddComponent<Text>();
+            playerGameObject.AddComponent<Rigidbody2D>();
+            
+            var player = playerGameObject.AddComponent<Player>();
+
+            var gameManager = Substitute.For<IGameManager>();
+            
+            player.Init(gameManager, 100);
+            
+            player.AttemptMove<Wall>(1, 1);
+            
+            Assert.AreEqual(99, player.Food);
+
+            yield return null;
+        }
     }
 }

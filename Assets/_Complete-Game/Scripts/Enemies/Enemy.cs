@@ -21,7 +21,8 @@ namespace Completed
 		{
 			//Register this enemy with our instance of GameManager by adding it to a list of Enemy objects. 
 			//This allows the GameManager to issue movement commands.
-			GameManager.instance.AddEnemyToList (this);
+			// TODO: add the game manager here.
+			//GameManager.instance.AddEnemyToList (this);
 			
 			//Get and store a reference to the attached Animator component.
 			animator = GetComponent<Animator> ();
@@ -36,7 +37,7 @@ namespace Completed
 		
 		//Override the AttemptMove function of MovingObject to include functionality needed for Enemy to skip turns.
 		//See comments in MovingObject for more on how base AttemptMove function works.
-		protected override void AttemptMove <T> (int xDir, int yDir)
+		public override void AttemptMove <T> (int xDir, int yDir)
 		{
 			//Check if skipMove is true, if so set it to false and skip this turn.
 			if(skipMove)
@@ -80,7 +81,7 @@ namespace Completed
 		
 		//OnCantMove is called if Enemy attempts to move into a space occupied by a Player, it overrides the OnCantMove function of MovingObject 
 		//and takes a generic parameter T which we use to pass in the component we expect to encounter, in this case Player
-		protected override void OnCantMove <T> (T component)
+		public override void OnCantMove <T> (T component)
 		{
 			//Declare hitPlayer and set it to equal the encountered component.
 			Player hitPlayer = component as Player;
