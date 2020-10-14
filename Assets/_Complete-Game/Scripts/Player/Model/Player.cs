@@ -1,5 +1,6 @@
 ﻿using Completed.Interfaces;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI; 
 using UnityEngine.SceneManagement;
 
@@ -14,7 +15,7 @@ namespace Completed
         public int pointsPerSoda = 20; //Number of points to add to player food points when picking up a soda object.
         public int wallDamage = 1; //How much damage a player does to a wall when chopping it.
         
-        public Text foodText;
+        //public Text foodText;
         public int Food { get; private set; }
 
         public AudioClip moveSound1;
@@ -29,6 +30,7 @@ namespace Completed
         private IGameManager _gameManager;
         
         // TODO: add list of executed movements.
+        public UnityEvent PlayerMoveEvent = new UnityEvent();
         
         public void Init(IGameManager gameManager, int initialFoodPoint)
         {
@@ -36,7 +38,6 @@ namespace Completed
             Food = initialFoodPoint;
 
             InitAnimator();
-            InitUiElements();
             
             base.Init();
         }
@@ -44,12 +45,6 @@ namespace Completed
         private void InitAnimator()
         {
             animator = GetComponent<Animator>();
-        }
-
-        private void InitUiElements()
-        {
-            if (foodText != null)
-                foodText.text = "Food: " + Food;
         }
 
         // private void OnDisable()
@@ -85,10 +80,8 @@ namespace Completed
         public override void AttemptMove<T>(int xDir, int yDir)
         {
             Food--;
-
-            if (foodText != null)
-                foodText.text = "Food: " + Food;
-
+            PublishMoveEvent();
+            
             base.AttemptMove<T>(xDir, yDir);
 
             if (Move(xDir, yDir, out RaycastHit2D hit))
@@ -101,6 +94,11 @@ namespace Completed
             EndTurn();
         }
 
+        private void PublishMoveEvent()
+        {
+            PlayerMoveEvent?.Invoke();
+        }
+
         private void EndTurn()
         {
             _gameManager.EndPlayerTurn();
@@ -108,9 +106,10 @@ namespace Completed
         
         public override void OnCantMove<T>(T component)
         {
-            Wall hitWall = component as Wall;
-            
-            hitWall.DamageWall(wallDamage);
+            var hitWall = component as Wall;
+
+            if (hitWall != null) 
+                hitWall.DamageWall(wallDamage);
 
             animator.SetTrigger("playerChop");
         }
@@ -127,7 +126,7 @@ namespace Completed
             if (other.CompareTag("Food"))
             {
                 Food += pointsPerFood;
-                foodText.text = "+" + pointsPerFood + " Food: " + Food;
+                //foodText.text = "+" + pointsPerFood + " Food: " + Food;
 
                 SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
 
@@ -138,7 +137,7 @@ namespace Completed
             if (other.CompareTag("Soda"))
             {
                 Food += pointsPerSoda;
-                foodText.text = "+" + pointsPerSoda + " Food: " + Food;
+                //foodText.text = "+" + pointsPerSoda + " Food: " + Food;
 
                 SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
 
@@ -157,7 +156,7 @@ namespace Completed
             animator.SetTrigger(PlayerHit);
 
             Food -= loss;
-            foodText.text = "-" + loss + " Food: " + Food;
+            //foodText.text = "-" + loss + " Food: " + Food;
 
             CheckIfGameOver();
         }
@@ -168,6 +167,7 @@ namespace Completed
             
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
+            
             _gameManager.GameOver();
         }
     }

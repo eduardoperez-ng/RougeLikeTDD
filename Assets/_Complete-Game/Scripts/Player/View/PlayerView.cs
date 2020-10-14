@@ -1,21 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Completed
 {
     public class PlayerView : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        [SerializeField] private Text _foodText;
+
+        public void UpdateFoodText(string food)
         {
-
+            _foodText.text = $"Food: {food}";;
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+        
     }
 }

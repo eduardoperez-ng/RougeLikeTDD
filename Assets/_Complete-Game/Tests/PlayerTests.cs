@@ -28,22 +28,13 @@ namespace Tests
             yield return null;
         }
         
-        // TODO: add test cases
-        // TODO: test 2 when player moves movement list is updated.
-        // TODO: add shadow.
         
         [UnityTest]
         public IEnumerator AttemptMoveRemovesOneFoodUnit()
         {
-            var playerGameObject = new GameObject("PlayerGameObject");
-            playerGameObject.AddComponent<BoxCollider2D>();
-            playerGameObject.AddComponent<Text>();
-            playerGameObject.AddComponent<Rigidbody2D>();
+            var gameManager = GivenAGameManager();
             
-            var player = playerGameObject.AddComponent<Player>();
-
-            var gameManager = Substitute.For<IGameManager>();
-            
+            var player = GivenAPlayer();
             player.Init(gameManager, 100);
             
             player.AttemptMove<Wall>(1, 1);
@@ -51,6 +42,29 @@ namespace Tests
             Assert.AreEqual(99, player.Food);
 
             yield return null;
+        }
+
+        private static IGameManager GivenAGameManager()
+        {
+            var gameManager = Substitute.For<IGameManager>();
+            return gameManager;
+        }
+
+        private static Player GivenAPlayer()
+        {
+            var playerGameObject = CreatePlayerGameObject();
+
+            var player = playerGameObject.AddComponent<Player>();
+            return player;
+        }
+
+        private static GameObject CreatePlayerGameObject()
+        {
+            var playerGameObject = new GameObject("PlayerGameObject");
+            playerGameObject.AddComponent<BoxCollider2D>();
+            playerGameObject.AddComponent<Text>();
+            playerGameObject.AddComponent<Rigidbody2D>();
+            return playerGameObject;
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Completed
         private bool doingSetup = true;
 
         private Player _player;
+        private PlayerPresenter _playerPresenter;
         
         private void Awake()
         {
@@ -70,6 +71,9 @@ namespace Completed
         {
             _player = FindObjectOfType<Player>();
             _player.Init(this, playerStartingFoodPoints);
+
+            var playerView = FindObjectOfType<PlayerView>();
+            _playerPresenter = new PlayerPresenter(_player, playerView);
         }
 
         private void InitEnemies()
