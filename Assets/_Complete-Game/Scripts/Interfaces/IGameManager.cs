@@ -11,5 +11,6 @@ namespace Completed.Interfaces
         IEnumerator MoveEnemies();
         void EndPlayerTurn();
         bool IsPlayersTurn();
+        void LoadNextLevel();
     }
 }

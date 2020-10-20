@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic; 
 using Completed.Interfaces;
+using Completed.MyInput;
 
 namespace Completed
 {
@@ -13,8 +14,6 @@ namespace Completed
         public float turnDelay = 0.1f;
         private const int playerStartingFoodPoints = 100;
 
-        //public static GameManager instance = null;
-        
         [HideInInspector]
         public bool playersTurn = true;
 
@@ -29,6 +28,7 @@ namespace Completed
 
         private Player _player;
         private PlayerPresenter _playerPresenter;
+        private MyInputHandler _myInputHandler;
         
         private void Awake()
         {
@@ -36,44 +36,55 @@ namespace Completed
             Init();
         }
 
-        // public void CallbackInitialization()
-        // {
-        //     SceneManager.sceneLoaded += OnSceneLoaded;
-        // }
-        //
-        // private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-        // {
-        //     Debug.Log("OnSceneLoaded()");
-        //     level++;
-        //     Init();
-        // }
-        
         public void Init()
         {
             Debug.Log("GameManager::Init()");
             doingSetup = true;
+            InitInput();
             InitUi();
             InitPlayer();
             InitEnemies();
             InitBoard();
         }
 
+        private void InitInput()
+        {
+            if (_myInputHandler == null)
+            {
+                _myInputHandler = GameObject.Find("MyInputHandler").GetComponent<MyInputHandler>();
+            }
+        }
+
         private void InitUi()
         {
-            levelImage = GameObject.Find("LevelImage");
-            levelText = GameObject.Find("LevelText").GetComponent<Text>();
+            if (levelText == null)
+            {
+                levelText = GameObject.Find("LevelText").GetComponent<Text>();
+            }
             levelText.text = "Day " + level;
+
+            if (levelImage == null)
+            {
+                levelImage = GameObject.Find("LevelImage");
+            }
             levelImage.SetActive(true);
+            
             Invoke("HideLevelImage", levelStartDelay);
         }
         
         private void InitPlayer()
         {
-            _player = FindObjectOfType<Player>();
-            _player.Init(this, playerStartingFoodPoints);
+            if (_player == null)
+            {
+                _player = FindObjectOfType<Player>();
+                _player.Init(this, playerStartingFoodPoints);
+            }
 
-            var playerView = FindObjectOfType<PlayerView>();
-            _playerPresenter = new PlayerPresenter(_player, playerView);
+            if (_playerPresenter == null)
+            {
+                var playerView = FindObjectOfType<PlayerView>();
+                _playerPresenter = new PlayerPresenter(_player, playerView);
+            }
         }
 
         private void InitEnemies()
@@ -87,7 +98,11 @@ namespace Completed
 
         private void InitBoard()
         {
-            boardScript = GetComponent<BoardManager>();
+            if (boardScript == null)
+            {
+                boardScript = GetComponent<BoardManager>();
+            }
+
             boardScript.SetupScene(level);
         }
 
@@ -146,5 +161,19 @@ namespace Completed
         {
             return playersTurn;
         }
+        
+        public void LoadNextLevel()
+        {
+            Debug.Log("LoadNextLevel()");
+            SceneManager.LoadSceneAsync("Main");
+        }
+
+        // private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        // {
+        //     Debug.Log("OnSceneLoaded()");
+        //     level++;
+        //     Init();
+        // }
+
     }
 }

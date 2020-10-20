@@ -1,8 +1,6 @@
 ﻿using Completed.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI; 
-using UnityEngine.SceneManagement;
 
 namespace Completed
 {
@@ -31,7 +29,7 @@ namespace Completed
         
         // TODO: add list of executed movements.
         public UnityEvent PlayerMoveEvent = new UnityEvent();
-        
+
         public void Init(IGameManager gameManager, int initialFoodPoint)
         {
             _gameManager = gameManager;
@@ -46,11 +44,6 @@ namespace Completed
         {
             animator = GetComponent<Animator>();
         }
-
-        // private void OnDisable()
-        // {
-        //     GameManager.instance.playerFoodPoints = _food;
-        // }
 
         private void Update()
         {
@@ -118,7 +111,7 @@ namespace Completed
         {
             if (other.CompareTag("Exit"))
             {
-                Invoke("Restart", restartLevelDelay);
+                Invoke("OnPlayerReachedExit", restartLevelDelay);
                 enabled = false;
                 return;
             }
@@ -142,15 +135,15 @@ namespace Completed
                 SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
 
                 other.gameObject.SetActive(false);
-                return;
             }
         }
-        
-        private void Restart()
+
+        private void OnPlayerReachedExit()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
+            SetPosition(0,0);
+            _gameManager.LoadNextLevel();
         }
-        
+
         public void LoseFood(int loss)
         {
             animator.SetTrigger(PlayerHit);
@@ -170,5 +163,6 @@ namespace Completed
             
             _gameManager.GameOver();
         }
+
     }
 }

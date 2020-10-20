@@ -93,6 +93,10 @@ namespace Completed
             isMoving = false;
         }
 
+        public void SetPosition(int x, int y)
+        {
+            rb2D.MovePosition(new Vector2(x,y));
+        }
 
         //The virtual keyword means AttemptMove can be overridden by inheriting classes using the override keyword.
         //AttemptMove takes a generic parameter T to specify the type of component we expect our unit to interact with if blocked (Player for Enemies, Wall for Player).
