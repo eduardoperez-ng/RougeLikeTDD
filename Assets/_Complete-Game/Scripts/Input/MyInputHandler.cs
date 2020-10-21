@@ -5,25 +5,50 @@ namespace Completed.MyInput
 {
     public class MyInputHandler : MonoBehaviour
     {
-        [SerializeField] private bool _started;
-        
+        [SerializeField] private bool _locked;
+        [SerializeField, Range(0,5)] private float _deltaTime = 1.0f;
+
         private int _horizontal = 0;
         private int _vertical = 0;
-        
+
+        private float _lastTime = 0;
+
         public MyCommandEvent commandPipeline = new MyCommandEvent();
-        
+
         private void Update()
         {
-            if (!_started)
+            if (_locked)
+            {
                 return;
+            }
+
+            ReadInput();
             
-            _horizontal = (int) (Input.GetAxisRaw("Horizontal"));
-            _vertical = (int) (Input.GetAxisRaw("Vertical"));
-            
+            TryToSendCommand();
+        }
+
+        private void ReadInput()
+        {
+            _horizontal = (int) Input.GetAxisRaw("Horizontal");
+            _vertical = (int) Input.GetAxisRaw("Vertical");
+        }
+
+        private void TryToSendCommand()
+        {
+            if (_lastTime + _deltaTime < Time.time)
+            {
+                CreateAndSendCommand();
+                _lastTime = Time.time;
+            }
+        }
+
+        private void CreateAndSendCommand()
+        {
             var command = CreateCommandFromInput();
-            
             if (command != null)
-                SendCommand(command);
+            {
+                commandPipeline?.Invoke(command);
+            }
         }
 
         private Command CreateCommandFromInput()
@@ -49,9 +74,15 @@ namespace Completed.MyInput
             return null;
         }
 
-        private void SendCommand(Command command)
+        public void Unlock()
         {
-            commandPipeline?.Invoke(command);
+            _locked = false;
+            _lastTime = Time.time;
+        }
+
+        public void Lock()
+        {
+            _locked = true;
         }
     }
 }

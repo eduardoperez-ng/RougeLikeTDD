@@ -2,7 +2,8 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI; 
 using System.Collections;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using Completed.Commands;
 using Completed.Interfaces;
 using Completed.MyInput;
 
@@ -52,7 +53,13 @@ namespace Completed
             if (_myInputHandler == null)
             {
                 _myInputHandler = GameObject.Find("MyInputHandler").GetComponent<MyInputHandler>();
+                _myInputHandler.commandPipeline.AddListener(HandleInput);
             }
+        }
+
+        private static void HandleInput(Command command)
+        {
+            Debug.Log($"** Command: {command}");
         }
 
         private void InitUi()
