@@ -912,7 +912,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd5eb9bf00447babe396a8ac7af3e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _started: 0
+  _locked: 0
+  _deltaTime: 0.25
   commandPipeline:
     m_PersistentCalls:
       m_Calls: []

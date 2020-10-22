@@ -57,9 +57,13 @@ namespace Completed
             }
         }
 
-        private static void HandleInput(Command command)
+        private void HandleInput(Command command)
         {
-            Debug.Log($"** Command: {command}");
+            Debug.Log($"*** HandleInput: {command}");
+            if (IsPlayersTurn() && !_player.IsMoving())
+            {
+                command.Execute(_player);
+            }
         }
 
         private void InitUi()
@@ -121,7 +125,10 @@ namespace Completed
 
         private void Update()
         {
-            if (playersTurn || enemiesMoving || doingSetup)
+            if (doingSetup)
+                return;
+            
+            if (playersTurn || enemiesMoving)
                 return;
 
             StartCoroutine(MoveEnemies());

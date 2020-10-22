@@ -5,7 +5,7 @@ namespace Completed.Commands
     [System.Serializable]
     public class Command
     {
-        public virtual void Execute() {}
+        public virtual void Execute(GameActor gameActor) {}
     }
 
     [System.Serializable]
