@@ -8,13 +8,12 @@ namespace Completed
     {
         public float moveTime = 0.1f;
         public LayerMask blockingLayer;
-        public bool Moving => _isMoving;
-        
-        private BoxCollider2D _boxCollider; 
+        protected bool Moving => _isMoving;
+
+        private BoxCollider2D _boxCollider;
         private Rigidbody2D _rb2D;
         private float _inverseMoveTime;
         private bool _isMoving;
-
 
         protected virtual void Start()
         {

@@ -1,4 +1,5 @@
-﻿using Completed.Interfaces;
+﻿using Completed.Constants;
+using Completed.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,15 +8,9 @@ namespace Completed
     public class Player : MovingObject
     {
         private static readonly int PlayerHit = Animator.StringToHash("playerHit");
-        
-        // TODO: move this else were
-        private float _hitExitInvokeDelay = 1f; //Delay time in seconds to restart level.
-        
-        public int pointsPerFood = 10;
-        public int pointsPerSoda = 20;
+
         public int wallDamage = 1;
         
-        //public Text foodText;
         public int Food { get; private set; }
 
         public AudioClip moveSound1;
@@ -72,6 +67,7 @@ namespace Completed
 
         private void EndTurn()
         {
+            // TODO: add an event
             _gameManager.EndPlayerTurn();
         }
         
@@ -89,14 +85,15 @@ namespace Completed
         {
             if (other.CompareTag("Exit"))
             {
-                Invoke("OnPlayerReachedExit", _hitExitInvokeDelay);
+                Invoke(nameof(OnPlayerReachedExit), 1f);
                 enabled = false;
                 return;
             }
             
             if (other.CompareTag("Food"))
             {
-                Food += pointsPerFood;
+                Food += FoodConstants.PointsPerFood;
+                // TODO: every time we hit something use a callback so we can update the view.
                 //foodText.text = "+" + pointsPerFood + " Food: " + Food;
 
                 SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
@@ -107,7 +104,7 @@ namespace Completed
             
             if (other.CompareTag("Soda"))
             {
-                Food += pointsPerSoda;
+                Food += FoodConstants.PointsPerSoda;
                 //foodText.text = "+" + pointsPerSoda + " Food: " + Food;
 
                 SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
@@ -119,6 +116,7 @@ namespace Completed
         private void OnPlayerReachedExit()
         {
             SetPosition(0,0);
+            // TODO: replace this with an event.
             _gameManager.LoadNextLevel();
         }
 
@@ -139,6 +137,7 @@ namespace Completed
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
             
+            // TODO: add an event.
             _gameManager.GameOver();
         }
 
