@@ -8,9 +8,10 @@ namespace Completed
     public class Player : MovingObject
     {
         private static readonly int PlayerHit = Animator.StringToHash("playerHit");
+        private static readonly int PlayerChop = Animator.StringToHash("playerChop");
 
         public int wallDamage = 1;
-        
+
         public int Food { get; private set; }
 
         public AudioClip moveSound1;
@@ -22,14 +23,16 @@ namespace Completed
         public AudioClip gameOverSound;
 
         private Animator animator;
-        private IGameManager _gameManager;
         
         // TODO: add list of executed movements.
         public UnityEvent PlayerMoveEvent = new UnityEvent();
+        public UnityEvent PlayerTurnEndEvent = new UnityEvent();
+        public UnityEvent PlayerReachedExitEvent = new UnityEvent();
+        public UnityEvent PlayerDeadEvent = new UnityEvent();
+        public PlayerEvent PlayerCollisionEvent = new PlayerEvent();
 
-        public void Init(IGameManager gameManager, int initialFoodPoint)
+        public void Init(int initialFoodPoint)
         {
-            _gameManager = gameManager;
             Food = initialFoodPoint;
 
             InitAnimator();
@@ -68,24 +71,27 @@ namespace Completed
         private void EndTurn()
         {
             // TODO: add an event
-            _gameManager.EndPlayerTurn();
+            //_gameManager.EndPlayerTurn();
+            PlayerTurnEndEvent?.Invoke();
         }
         
         public override void OnCantMove<T>(T component)
         {
             var hitWall = component as Wall;
 
-            if (hitWall != null) 
+            if (hitWall != null)
+            {
                 hitWall.DamageWall(wallDamage);
+            }
 
-            animator.SetTrigger("playerChop");
+            animator.SetTrigger(PlayerChop);
         }
         
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.CompareTag("Exit"))
             {
-                Invoke(nameof(OnPlayerReachedExit), 1f);
+                PlayerReachedExitEvent?.Invoke();
                 enabled = false;
                 return;
             }
@@ -93,11 +99,8 @@ namespace Completed
             if (other.CompareTag("Food"))
             {
                 Food += FoodConstants.PointsPerFood;
-                // TODO: every time we hit something use a callback so we can update the view.
-                //foodText.text = "+" + pointsPerFood + " Food: " + Food;
-
+                PlayerCollisionEvent?.Invoke("Food");
                 SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
-
                 other.gameObject.SetActive(false);
                 return;
             }
@@ -105,28 +108,16 @@ namespace Completed
             if (other.CompareTag("Soda"))
             {
                 Food += FoodConstants.PointsPerSoda;
-                //foodText.text = "+" + pointsPerSoda + " Food: " + Food;
-
+                PlayerCollisionEvent?.Invoke("Soda");
                 SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
-
                 other.gameObject.SetActive(false);
             }
-        }
-
-        private void OnPlayerReachedExit()
-        {
-            SetPosition(0,0);
-            // TODO: replace this with an event.
-            _gameManager.LoadNextLevel();
         }
 
         public void LoseFood(int loss)
         {
             animator.SetTrigger(PlayerHit);
-
             Food -= loss;
-            //foodText.text = "-" + loss + " Food: " + Food;
-
             CheckIfGameOver();
         }
         
@@ -137,8 +128,7 @@ namespace Completed
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
             
-            // TODO: add an event.
-            _gameManager.GameOver();
+            PlayerDeadEvent?.Invoke();
         }
 
         public bool IsMoving()
@@ -146,4 +136,9 @@ namespace Completed
             return Moving;
         }
     }
+    
+    
+    [System.Serializable]
+    public class PlayerEvent : UnityEvent<string> {}
+    
 }

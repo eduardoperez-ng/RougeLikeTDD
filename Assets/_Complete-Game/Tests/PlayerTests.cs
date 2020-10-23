@@ -35,7 +35,7 @@ namespace Tests
             var gameManager = GivenAGameManager();
             
             var player = GivenAPlayer();
-            player.Init(gameManager, 100);
+            player.Init(100);
             
             player.AttemptMove<Wall>(1, 1);
             

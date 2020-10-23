@@ -12,5 +12,9 @@ namespace Completed
             _foodText.text = $"Food: {food}";;
         }
         
+        public void UpdateText(string text)
+        {
+            _foodText.text = text;
+        }
     }
 }

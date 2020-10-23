@@ -9,8 +9,7 @@ namespace Completed.Interfaces
         void AddEnemyToList(Enemy script);
         void GameOver();
         IEnumerator MoveEnemies();
-        void EndPlayerTurn();
+        void HandleEndPlayerTurn();
         bool IsPlayersTurn();
-        void LoadNextLevel();
     }
 }

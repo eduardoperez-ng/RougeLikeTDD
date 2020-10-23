@@ -88,7 +88,7 @@ namespace Completed
             if (_player == null)
             {
                 _player = FindObjectOfType<Player>();
-                _player.Init(this, playerStartingFoodPoints);
+                _player.Init(playerStartingFoodPoints);
             }
 
             if (_playerPresenter == null)
@@ -96,6 +96,27 @@ namespace Completed
                 var playerView = FindObjectOfType<PlayerView>();
                 _playerPresenter = new PlayerPresenter(_player, playerView);
             }
+            
+            _player.PlayerTurnEndEvent.AddListener(HandleEndPlayerTurn);
+            _player.PlayerReachedExitEvent.AddListener(HandlePlayerReachedExit);
+            _player.PlayerDeadEvent.AddListener(GameOver);
+        }
+
+        public void HandleEndPlayerTurn()
+        {
+            playersTurn = false;
+        }
+        
+        private void HandlePlayerReachedExit()
+        {
+            StartCoroutine(LoadNextLevel());
+        }
+        
+        private IEnumerator LoadNextLevel()
+        {
+            Debug.Log("LoadNextLevel()");
+            yield return new WaitForSeconds(1f);
+            SceneManager.LoadSceneAsync("Main");
         }
 
         private void InitEnemies()
@@ -141,6 +162,7 @@ namespace Completed
         
         public void GameOver()
         {
+            // TODO: add a presenter for the game manager.
             levelText.text = "After " + level + " days, you starved.";
             levelImage.SetActive(true);
             enabled = false;
@@ -166,20 +188,9 @@ namespace Completed
             enemiesMoving = false;
         }
 
-        public void EndPlayerTurn()
-        {
-            playersTurn = false;
-        }
-
         public bool IsPlayersTurn()
         {
             return playersTurn;
-        }
-        
-        public void LoadNextLevel()
-        {
-            Debug.Log("LoadNextLevel()");
-            SceneManager.LoadSceneAsync("Main");
         }
 
         // private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
