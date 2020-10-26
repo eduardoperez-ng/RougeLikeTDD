@@ -21,7 +21,6 @@ namespace Completed
         private Text levelText; 
         private GameObject levelImage;
         private BoardManager boardScript;
-        private int level = 1; 
         private List<Enemy> enemies;
         private bool enemiesMoving; 
 
@@ -33,7 +32,6 @@ namespace Completed
         
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
             Init();
         }
 
@@ -42,10 +40,11 @@ namespace Completed
             Debug.Log("GameManager::Init()");
             doingSetup = true;
             InitInput();
-            InitUi();
+            InitLevel();
             InitPlayer();
             InitEnemies();
             InitBoard();
+            InitUi();
         }
 
         private void InitInput()
@@ -57,6 +56,12 @@ namespace Completed
             }
         }
 
+        private static void InitLevel()
+        {
+            if (LevelManager.CurrentDay == 0)
+                LevelManager.CurrentDay = 1;
+        }
+
         private void HandleInput(Command command)
         {
             Debug.Log($"*** HandleInput: {command}");
@@ -66,13 +71,14 @@ namespace Completed
             }
         }
 
+        // TODO: add a presenter to handle this.
         private void InitUi()
         {
             if (levelText == null)
             {
                 levelText = GameObject.Find("LevelText").GetComponent<Text>();
             }
-            levelText.text = "Day " + level;
+            levelText.text = "Day " + LevelManager.CurrentDay;
 
             if (levelImage == null)
             {
@@ -80,7 +86,7 @@ namespace Completed
             }
             levelImage.SetActive(true);
             
-            Invoke("HideLevelImage", levelStartDelay);
+            Invoke(nameof(HideLevelImage), levelStartDelay);
         }
         
         private void InitPlayer()
@@ -109,7 +115,13 @@ namespace Completed
         
         private void HandlePlayerReachedExit()
         {
+            IncreaseLevel();
             StartCoroutine(LoadNextLevel());
+        }
+        
+        private static void IncreaseLevel()
+        {
+            LevelManager.CurrentDay++;
         }
         
         private IEnumerator LoadNextLevel()
@@ -117,6 +129,15 @@ namespace Completed
             Debug.Log("LoadNextLevel()");
             yield return new WaitForSeconds(1f);
             SceneManager.LoadSceneAsync("Main");
+        }
+        
+        public void GameOver()
+        {
+            // TODO: add a presenter for the game manager.
+            levelText.text = "After " + LevelManager.CurrentDay + " days, you starved.";
+            levelImage.SetActive(true);
+            enabled = false;
+            LevelManager.CurrentDay = 1;
         }
 
         private void InitEnemies()
@@ -135,9 +156,10 @@ namespace Completed
                 boardScript = GetComponent<BoardManager>();
             }
 
-            boardScript.SetupScene(level);
+            boardScript.SetupScene(LevelManager.CurrentDay);
         }
 
+        // TODO: move this to a presenter.
         public void HideLevelImage()
         {
             levelImage.SetActive(false);
@@ -158,14 +180,6 @@ namespace Completed
         public void AddEnemyToList(Enemy script)
         {
             enemies.Add(script);
-        }
-        
-        public void GameOver()
-        {
-            // TODO: add a presenter for the game manager.
-            levelText.text = "After " + level + " days, you starved.";
-            levelImage.SetActive(true);
-            enabled = false;
         }
 
         public IEnumerator MoveEnemies()
@@ -192,13 +206,6 @@ namespace Completed
         {
             return playersTurn;
         }
-
-        // private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-        // {
-        //     Debug.Log("OnSceneLoaded()");
-        //     level++;
-        //     Init();
-        // }
-
+        
     }
 }

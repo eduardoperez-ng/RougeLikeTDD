@@ -25,10 +25,10 @@ namespace Completed
         private void HandlePlayerCollisionEvent(string colliderObjectName)
         {
             if (colliderObjectName == "Soda")
-                _playerView.UpdateText($"+ {FoodConstants.PointsPerSoda} Food: {colliderObjectName}");
+                _playerView.UpdateText($"+{FoodConstants.PointsPerSoda} {colliderObjectName}");
             
             if (colliderObjectName == "Food")
-                _playerView.UpdateText($"+ {FoodConstants.PointsPerFood} Food: {colliderObjectName}");
+                _playerView.UpdateText($"+{FoodConstants.PointsPerFood} {colliderObjectName}");
             
         }
     }
