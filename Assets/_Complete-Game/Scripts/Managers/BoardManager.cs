@@ -35,6 +35,8 @@ namespace Completed
         public GameObject[] enemyTiles; //Array of enemy prefabs.
         public GameObject[] outerWallTiles; //Array of outer tile prefabs.
 
+        public List<GameObject> InstantiatedEnemies { get; private set; }
+        
         private Transform boardHolder; //A variable to store a reference to the transform of our Board object.
         private List<Vector3> gridPositions = new List<Vector3>(); //A list of possible locations to place tiles.
 
@@ -55,6 +57,8 @@ namespace Completed
                     gridPositions.Add(new Vector3(x, y, 0f));
                 }
             }
+            
+            InstantiatedEnemies = new List<GameObject>();
         }
 
 
@@ -121,10 +125,18 @@ namespace Completed
                 GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
 
                 //Instantiate tileChoice at the position returned by RandomPosition with no change in rotation
-                Instantiate(tileChoice, randomPosition, Quaternion.identity);
+                GameObject instantiatedLayoutObject = Instantiate(tileChoice, randomPosition, Quaternion.identity);
+                RegisterBoardElement(instantiatedLayoutObject);
             }
         }
 
+        private void RegisterBoardElement(GameObject instantiatedLayoutObject)
+        {
+            if (instantiatedLayoutObject.GetComponent<Enemy>() != null)
+            {
+                InstantiatedEnemies.Add(instantiatedLayoutObject);
+            }
+        }
 
         //SetupScene initializes our level and calls the previous functions to lay out the game board
         public void SetupScene(int level)

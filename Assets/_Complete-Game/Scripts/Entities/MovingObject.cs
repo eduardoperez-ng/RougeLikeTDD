@@ -14,12 +14,8 @@ namespace Completed
         private Rigidbody2D _rb2D;
         private float _inverseMoveTime;
         private bool _isMoving;
-
-        protected virtual void Start()
-        {
-        }
-
-        protected void Init()
+        
+        public virtual void Init()
         {
             _boxCollider = GetComponent<BoxCollider2D>();
             _rb2D = GetComponent<Rigidbody2D>();

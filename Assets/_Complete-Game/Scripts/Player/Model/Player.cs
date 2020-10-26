@@ -1,5 +1,4 @@
 ﻿using Completed.Constants;
-using Completed.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -70,15 +69,12 @@ namespace Completed
 
         private void EndTurn()
         {
-            // TODO: add an event
-            //_gameManager.EndPlayerTurn();
             PlayerTurnEndEvent?.Invoke();
         }
         
         public override void OnCantMove<T>(T component)
         {
             var hitWall = component as Wall;
-
             if (hitWall != null)
             {
                 hitWall.DamageWall(wallDamage);
@@ -136,8 +132,7 @@ namespace Completed
             return Moving;
         }
     }
-    
-    
+
     [System.Serializable]
     public class PlayerEvent : UnityEvent<string> {}
     

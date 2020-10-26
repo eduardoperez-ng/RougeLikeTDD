@@ -6,7 +6,6 @@ namespace Completed.Interfaces
     {
         void Init();
         void HideLevelImage();
-        void AddEnemyToList(Enemy script);
         void GameOver();
         IEnumerator MoveEnemies();
         void HandleEndPlayerTurn();

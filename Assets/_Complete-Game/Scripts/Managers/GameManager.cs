@@ -2,7 +2,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI; 
 using System.Collections;
-using System.Collections.Generic;
 using Completed.Commands;
 using Completed.Interfaces;
 using Completed.MyInput;
@@ -21,9 +20,9 @@ namespace Completed
         private Text levelText; 
         private GameObject levelImage;
         private BoardManager boardScript;
-        private List<Enemy> enemies;
-        private bool enemiesMoving; 
-
+        private EnemyManager _enemyManager;
+        
+        private bool enemiesMoving;
         private bool doingSetup = true;
 
         private Player _player;
@@ -42,8 +41,8 @@ namespace Completed
             InitInput();
             InitLevel();
             InitPlayer();
-            InitEnemies();
             InitBoard();
+            InitEnemies();
             InitUi();
         }
 
@@ -59,7 +58,9 @@ namespace Completed
         private static void InitLevel()
         {
             if (LevelManager.CurrentDay == 0)
+            {
                 LevelManager.CurrentDay = 1;
+            }
         }
 
         private void HandleInput(Command command)
@@ -142,11 +143,7 @@ namespace Completed
 
         private void InitEnemies()
         {
-            if (enemies == null)
-            {
-                enemies = new List<Enemy>();
-            }
-            enemies.Clear();
+            _enemyManager = new EnemyManager(boardScript.InstantiatedEnemies);
         }
 
         private void InitBoard()
@@ -155,7 +152,6 @@ namespace Completed
             {
                 boardScript = GetComponent<BoardManager>();
             }
-
             boardScript.SetupScene(LevelManager.CurrentDay);
         }
 
@@ -176,23 +172,18 @@ namespace Completed
 
             StartCoroutine(MoveEnemies());
         }
-
-        public void AddEnemyToList(Enemy script)
-        {
-            enemies.Add(script);
-        }
-
         public IEnumerator MoveEnemies()
         {
+            Debug.Log("MoveEnemies");
             enemiesMoving = true;
             yield return new WaitForSeconds(turnDelay);
 
-            if (enemies.Count == 0)
+            if (_enemyManager.HasEnemies())
             {
                 yield return new WaitForSeconds(turnDelay);
             }
 
-            foreach (var enemy in enemies)
+            foreach (var enemy in _enemyManager.Enemies)
             {
                 enemy.MoveEnemy();
                 yield return new WaitForSeconds(enemy.moveTime);
