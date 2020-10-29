@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; 
 using System.Collections;
 using Completed.Commands;
 using Completed.Interfaces;
 using Completed.MyInput;
+using Completed.Presenter;
+using Completed.View;
 
 namespace Completed
 {
     public class GameManager : MonoBehaviour, IGameManager
     {
-        public float levelStartDelay = 2f;
         public float turnDelay = 0.1f;
-        private const int playerStartingFoodPoints = 100;
 
+        // TODO: move this to a turn manager.
         [HideInInspector]
         public bool playersTurn = true;
 
-        private Text levelText; 
-        private GameObject levelImage;
+        //private Text levelText; 
+        //private GameObject levelImage;
         private BoardManager boardScript;
         private EnemyManager _enemyManager;
         
@@ -27,6 +27,7 @@ namespace Completed
 
         private Player _player;
         private PlayerPresenter _playerPresenter;
+        private GameManagerPresenter _gameManagerPresenter;
         private MyInputHandler _myInputHandler;
         
         private void Awake()
@@ -44,6 +45,7 @@ namespace Completed
             InitBoard();
             InitEnemies();
             InitUi();
+            doingSetup = false;
         }
 
         private void InitInput()
@@ -75,19 +77,22 @@ namespace Completed
         // TODO: add a presenter to handle this.
         private void InitUi()
         {
-            if (levelText == null)
-            {
-                levelText = GameObject.Find("LevelText").GetComponent<Text>();
-            }
-            levelText.text = "Day " + LevelManager.CurrentDay;
-
-            if (levelImage == null)
-            {
-                levelImage = GameObject.Find("LevelImage");
-            }
-            levelImage.SetActive(true);
-            
-            Invoke(nameof(HideLevelImage), levelStartDelay);
+            GameManagerView gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
+            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView);
+            _gameManagerPresenter.ShowCurrentDay(LevelManager.CurrentDay);
+            // if (levelText == null)
+            // {
+            //     levelText = GameObject.Find("LevelText").GetComponent<Text>();
+            // }
+            // levelText.text = "Day " + LevelManager.CurrentDay;
+            //
+            // if (levelImage == null)
+            // {
+            //     levelImage = GameObject.Find("LevelImage");
+            // }
+            // levelImage.SetActive(true);
+            //
+            // Invoke(nameof(HideLevelImage), levelStartDelay);
         }
         
         private void InitPlayer()
@@ -95,7 +100,7 @@ namespace Completed
             if (_player == null)
             {
                 _player = FindObjectOfType<Player>();
-                _player.Init(playerStartingFoodPoints);
+                _player.Init(LevelManager.GetPlayerFoodForCurrentDay());
             }
 
             if (_playerPresenter == null)
@@ -117,6 +122,7 @@ namespace Completed
         private void HandlePlayerReachedExit()
         {
             IncreaseLevel();
+            SavePlayerFood();
             StartCoroutine(LoadNextLevel());
         }
         
@@ -124,19 +130,21 @@ namespace Completed
         {
             LevelManager.CurrentDay++;
         }
-        
+
+        private void SavePlayerFood()
+        {
+            LevelManager.CurrentPlayerFood = _player.Food;
+        }
+
         private IEnumerator LoadNextLevel()
         {
-            Debug.Log("LoadNextLevel()");
             yield return new WaitForSeconds(1f);
             SceneManager.LoadSceneAsync("Main");
         }
         
         public void GameOver()
         {
-            // TODO: add a presenter for the game manager.
-            levelText.text = "After " + LevelManager.CurrentDay + " days, you starved.";
-            levelImage.SetActive(true);
+            _gameManagerPresenter.ShowGameOver(LevelManager.CurrentDay);
             enabled = false;
             LevelManager.CurrentDay = 1;
         }
@@ -153,13 +161,6 @@ namespace Completed
                 boardScript = GetComponent<BoardManager>();
             }
             boardScript.SetupScene(LevelManager.CurrentDay);
-        }
-
-        // TODO: move this to a presenter.
-        public void HideLevelImage()
-        {
-            levelImage.SetActive(false);
-            doingSetup = false;
         }
 
         private void Update()
