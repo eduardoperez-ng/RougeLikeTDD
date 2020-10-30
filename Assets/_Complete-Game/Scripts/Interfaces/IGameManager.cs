@@ -6,8 +6,7 @@ namespace Completed.Interfaces
     {
         void Init();
         void GameOver();
-        IEnumerator MoveEnemies();
-        void HandleEndPlayerTurn();
+        void HandleEnemiesTurn();
         bool IsPlayersTurn();
     }
 }

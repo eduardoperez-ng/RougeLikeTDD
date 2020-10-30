@@ -23,7 +23,6 @@ namespace Completed
 
         private Animator animator;
         
-        // TODO: add list of executed movements.
         public UnityEvent PlayerMoveEvent = new UnityEvent();
         public UnityEvent PlayerTurnEndEvent = new UnityEvent();
         public UnityEvent PlayerReachedExitEvent = new UnityEvent();

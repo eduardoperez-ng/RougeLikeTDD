@@ -93,14 +93,15 @@ namespace Completed
                 _playerPresenter = new PlayerPresenter(_player, playerView);
             }
             
-            _player.PlayerTurnEndEvent.AddListener(HandleEndPlayerTurn);
+            _player.PlayerTurnEndEvent.AddListener(HandleEnemiesTurn);
             _player.PlayerReachedExitEvent.AddListener(HandlePlayerReachedExit);
             _player.PlayerDeadEvent.AddListener(GameOver);
         }
 
-        public void HandleEndPlayerTurn()
+        public void HandleEnemiesTurn()
         {
             playersTurn = false;
+            TryMoveEnemies();
         }
         
         private void HandlePlayerReachedExit()
@@ -147,20 +148,14 @@ namespace Completed
             _boardManager.SetupScene(LevelManager.CurrentDay);
         }
 
-        private void Update()
+        private void TryMoveEnemies()
         {
-            if (doingSetup)
-                return;
-            
-            if (playersTurn || enemiesMoving)
-                return;
-
             StartCoroutine(MoveEnemies());
         }
-        
-        public IEnumerator MoveEnemies()
+
+        private IEnumerator MoveEnemies()
         {
-            //Debug.Log("MoveEnemies");
+            Debug.Log("MoveEnemies");
             enemiesMoving = true;
             yield return new WaitForSeconds(turnDelay);
 
