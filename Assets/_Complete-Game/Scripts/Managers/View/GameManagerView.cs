@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Completed.View
@@ -7,22 +9,24 @@ namespace Completed.View
     {
         public Text levelText; 
         public GameObject levelImage;
+        public Button levelButton;
         private float hideLevelImageDelay = 2f;
-
+        
         public void Init()
         {
             if (levelText == null)
             {
                 levelText = GameObject.Find("LevelText").GetComponent<Text>();
             }
-            //levelText.text = "Day " + LevelManager.CurrentDay;
-
             if (levelImage == null)
             {
                 levelImage = GameObject.Find("LevelImage");
             }
-            //levelImage.SetActive(true);
-            //Invoke(nameof(HideLevelImage), hideLevelImageDelay);
+
+            if (levelButton == null) return;
+            
+            levelButton.onClick.AddListener(LoadMainMenu);
+            levelButton.gameObject.SetActive(false);
         }
 
         public void ShowCurrentDay(int currentDay)
@@ -41,6 +45,12 @@ namespace Completed.View
         {
             levelText.text = $"After {currentDay} days, you starved.";
             levelImage.SetActive(true);
+            levelButton.gameObject.SetActive(true);
+        }
+        
+        private static void LoadMainMenu()
+        {
+            SceneManager.LoadSceneAsync("MainMenu");
         }
     }
 }

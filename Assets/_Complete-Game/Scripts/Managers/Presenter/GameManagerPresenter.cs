@@ -14,7 +14,6 @@ namespace Completed.Presenter
             _gameManagerView.Init();
         }
 
-
         public void ShowCurrentDay(int currentDay)
         {
             _gameManagerView.ShowCurrentDay(currentDay);

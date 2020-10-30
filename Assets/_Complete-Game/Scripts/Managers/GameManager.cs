@@ -17,9 +17,7 @@ namespace Completed
         [HideInInspector]
         public bool playersTurn = true;
 
-        //private Text levelText; 
-        //private GameObject levelImage;
-        private BoardManager boardScript;
+        private BoardManager _boardManager;
         private EnemyManager _enemyManager;
         
         private bool enemiesMoving;
@@ -67,32 +65,18 @@ namespace Completed
 
         private void HandleInput(Command command)
         {
-            Debug.Log($"*** HandleInput: {command}");
+            //Debug.Log($"*** HandleInput: {command}");
             if (IsPlayersTurn() && !_player.IsMoving())
             {
                 command.Execute(_player);
             }
         }
 
-        // TODO: add a presenter to handle this.
         private void InitUi()
         {
-            GameManagerView gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
+            var gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
             _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView);
             _gameManagerPresenter.ShowCurrentDay(LevelManager.CurrentDay);
-            // if (levelText == null)
-            // {
-            //     levelText = GameObject.Find("LevelText").GetComponent<Text>();
-            // }
-            // levelText.text = "Day " + LevelManager.CurrentDay;
-            //
-            // if (levelImage == null)
-            // {
-            //     levelImage = GameObject.Find("LevelImage");
-            // }
-            // levelImage.SetActive(true);
-            //
-            // Invoke(nameof(HideLevelImage), levelStartDelay);
         }
         
         private void InitPlayer()
@@ -125,7 +109,7 @@ namespace Completed
             SavePlayerFood();
             StartCoroutine(LoadNextLevel());
         }
-        
+
         private static void IncreaseLevel()
         {
             LevelManager.CurrentDay++;
@@ -141,26 +125,26 @@ namespace Completed
             yield return new WaitForSeconds(1f);
             SceneManager.LoadSceneAsync("Main");
         }
-        
+
         public void GameOver()
         {
             _gameManagerPresenter.ShowGameOver(LevelManager.CurrentDay);
-            enabled = false;
             LevelManager.CurrentDay = 1;
+            enabled = false;
         }
 
         private void InitEnemies()
         {
-            _enemyManager = new EnemyManager(boardScript.InstantiatedEnemies);
+            _enemyManager = new EnemyManager(_boardManager.InstantiatedEnemies);
         }
 
         private void InitBoard()
         {
-            if (boardScript == null)
+            if (_boardManager == null)
             {
-                boardScript = GetComponent<BoardManager>();
+                _boardManager = GetComponent<BoardManager>();
             }
-            boardScript.SetupScene(LevelManager.CurrentDay);
+            _boardManager.SetupScene(LevelManager.CurrentDay);
         }
 
         private void Update()
@@ -173,9 +157,10 @@ namespace Completed
 
             StartCoroutine(MoveEnemies());
         }
+        
         public IEnumerator MoveEnemies()
         {
-            Debug.Log("MoveEnemies");
+            //Debug.Log("MoveEnemies");
             enemiesMoving = true;
             yield return new WaitForSeconds(turnDelay);
 
@@ -189,15 +174,15 @@ namespace Completed
                 enemy.MoveEnemy();
                 yield return new WaitForSeconds(enemy.moveTime);
             }
-
-            playersTurn = true;
             enemiesMoving = false;
+            
+            playersTurn = true;
         }
 
         public bool IsPlayersTurn()
         {
             return playersTurn;
         }
-        
+
     }
 }
