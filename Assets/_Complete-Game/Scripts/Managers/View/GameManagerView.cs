@@ -1,5 +1,5 @@
+using Completed.Interfaces;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -7,13 +7,19 @@ namespace Completed.View
 {
     public class GameManagerView : MonoBehaviour
     {
-        public Text levelText; 
+        public Text levelText;
+        public Text timerText;
+        public Text turnText;
+        public Text currentDayText;
         public GameObject levelImage;
         public Button levelButton;
         private float hideLevelImageDelay = 2f;
+        private ITimer _timer;
         
-        public void Init()
+        public void Init(ITimer timer)
         {
+            _timer = timer;
+            
             if (levelText == null)
             {
                 levelText = GameObject.Find("LevelText").GetComponent<Text>();
@@ -32,6 +38,7 @@ namespace Completed.View
         public void ShowCurrentDay(int currentDay)
         {
             levelText.text = $"Day {LevelManager.CurrentDay}";
+            currentDayText.text = $"day {LevelManager.CurrentDay}";
             levelImage.SetActive(true);
             Invoke(nameof(HideLevelImage), hideLevelImageDelay);
         }
@@ -51,6 +58,17 @@ namespace Completed.View
         private static void LoadMainMenu()
         {
             SceneManager.LoadSceneAsync("MainMenu");
+        }
+
+        public void ShowElapsedTime()
+        {
+            timerText.text = $"{_timer.ElapsedTime:0000}";
+        }
+        
+        public void ShowTurn(string gameActor)
+        {
+            turnText.color = gameActor == "Player" ? Color.green : Color.white;
+            turnText.text = gameActor;
         }
     }
 }

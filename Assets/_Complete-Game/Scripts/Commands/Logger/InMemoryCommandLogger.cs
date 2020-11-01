@@ -1,24 +1,29 @@
 using System.Collections.Generic;
 using Completed.Interfaces;
-using UnityEngine;
 
 namespace Completed.Commands.Logger
 {
     public class InMemoryCommandLogger : ICommandLogger
     {
-        private Dictionary<float, Command> _executedCommands;
-        private ITimer _timer;
+        // TODO: testear esta clase.
+        private Dictionary<int, List<Command>> _executedCommands;
 
-        public InMemoryCommandLogger(ITimer timer)
+        public InMemoryCommandLogger()
         {
-            _timer = timer;
-            _executedCommands = new Dictionary<float, Command>();
+            _executedCommands = new Dictionary<int, List<Command>>();
         }
 
         public void LogCommand(Command command)
         {
-            float elapsedTime = _timer.ElapsedTime;
-            _executedCommands.Add(elapsedTime, command);
+            int currentDay = LevelManager.CurrentDay;
+            if (_executedCommands.TryGetValue(currentDay, out var commands))
+            {
+                commands.Add(command);
+            }
+            else
+            {
+                _executedCommands.Add(currentDay, new List<Command>{command});
+            }
         }
         
     }

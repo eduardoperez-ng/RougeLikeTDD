@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class CommandsView : MonoBehaviour
@@ -8,7 +7,7 @@ public class CommandsView : MonoBehaviour
 
     public void UpdateView(string command)
     {
-        _commandText.text += $"{command} ";
+        _commandText.text += $" {command}";
     }
     
     public void ClearView()

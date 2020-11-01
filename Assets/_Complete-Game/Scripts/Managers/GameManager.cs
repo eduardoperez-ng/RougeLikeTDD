@@ -35,10 +35,15 @@ namespace Completed
         private ITimer _timer;
         private ICommandLogger _inMemoryCommandLogger;
         private ICommandLogger _consoleCommandLogger;
-
+        
         private void Awake()
         {
             Init();
+        }
+
+        private void Update()
+        {
+            _gameManagerPresenter.ShowElapsedTime();
         }
 
         public void Init()
@@ -50,6 +55,7 @@ namespace Completed
             InitPlayer();
             InitBoard();
             InitEnemies();
+            InitTimer();
             InitUi();
             InitCommandLogger();
             doingSetup = false;
@@ -62,20 +68,20 @@ namespace Completed
             _myInputHandler.commandPipeline.AddListener(HandleInput);
         }
 
-        private static void InitLevel()
-        {
-            if (LevelManager.CurrentDay == 0)
-            {
-                LevelManager.CurrentDay = 1;
-            }
-        }
-
         private void HandleInput(Command command)
         {
             if (IsPlayersTurn() && !_player.IsMoving())
             {
                 command.Execute(_player);
                 LogCommand(command);
+            }
+        }
+
+        private static void InitLevel()
+        {
+            if (LevelManager.CurrentDay == 0)
+            {
+                LevelManager.CurrentDay = 1;
             }
         }
 
@@ -108,6 +114,7 @@ namespace Completed
         public void HandleEnemiesTurn()
         {
             playersTurn = false;
+            _gameManagerPresenter.ShowCurrentTurn("Enemy");
             TryMoveEnemies();
         }
 
@@ -155,17 +162,22 @@ namespace Completed
             _enemyManager = new EnemyManager(_boardManager.InstantiatedEnemies);
         }
 
+        private void InitTimer()
+        {
+            _timer = new UnityTimer();
+        }
+
         private void InitUi()
         {
             var gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
-            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView);
+            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView, _timer);
             _gameManagerPresenter.ShowCurrentDay(LevelManager.CurrentDay);
         }
 
         private void InitCommandLogger()
         {
-            _inMemoryCommandLogger = new InMemoryCommandLogger(new UnityTimer());
-            _consoleCommandLogger = new ConsoleCommandLogger(new UnityTimer());
+            _inMemoryCommandLogger = new InMemoryCommandLogger();
+            _consoleCommandLogger = new ConsoleCommandLogger(_timer);
             var commandsView = GameObject.Find("CommandsView").GetComponent<CommandsView>();
             _commandsPresenter = new CommandsPresenter(commandsView);
         }
@@ -194,6 +206,7 @@ namespace Completed
             enemiesMoving = false;
             
             playersTurn = true;
+            _gameManagerPresenter.ShowCurrentTurn("Player");
         }
 
         public bool IsPlayersTurn()

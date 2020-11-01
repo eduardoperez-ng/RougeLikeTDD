@@ -1,3 +1,4 @@
+using Completed.Interfaces;
 using Completed.View;
 
 namespace Completed.Presenter
@@ -7,11 +8,11 @@ namespace Completed.Presenter
         private GameManagerView _gameManagerView;
         private GameManager _gameManager;
         
-        public GameManagerPresenter(GameManager gameManager, GameManagerView gameManagerView)
+        public GameManagerPresenter(GameManager gameManager, GameManagerView gameManagerView, ITimer timer)
         {
             _gameManager = gameManager;
             _gameManagerView = gameManagerView;
-            _gameManagerView.Init();
+            _gameManagerView.Init(timer);
         }
 
         public void ShowCurrentDay(int currentDay)
@@ -22,6 +23,16 @@ namespace Completed.Presenter
         public void ShowGameOver(int currentDay)
         {
             _gameManagerView.ShowGameOver(currentDay);
+        }
+
+        public void ShowElapsedTime()
+        {
+            _gameManagerView.ShowElapsedTime();
+        }
+
+        public void ShowCurrentTurn(string gameActor)
+        {
+            _gameManagerView.ShowTurn(gameActor);
         }
     }
 }
