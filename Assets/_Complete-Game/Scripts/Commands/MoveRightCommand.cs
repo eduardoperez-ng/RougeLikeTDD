@@ -7,5 +7,10 @@ namespace Completed.Commands
         {
             gameActor.AttemptMove<Wall>(1, 0);
         }
+        
+        public override string ToString()
+        {
+            return "right";
+        }
     }
 }

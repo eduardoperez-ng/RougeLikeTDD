@@ -28,7 +28,8 @@ namespace Completed
         public UnityEvent PlayerReachedExitEvent = new UnityEvent();
         public UnityEvent PlayerDeadEvent = new UnityEvent();
         public PlayerEvent PlayerCollisionEvent = new PlayerEvent();
-
+        
+        
         public void Init(int initialFoodPoint)
         {
             Food = initialFoodPoint;

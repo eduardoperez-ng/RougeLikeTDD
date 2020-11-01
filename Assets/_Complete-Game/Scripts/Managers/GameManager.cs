@@ -2,9 +2,12 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using Completed.Commands;
+using Completed.Commands.Logger;
+using Completed.Commands.Presenter;
 using Completed.Interfaces;
 using Completed.MyInput;
 using Completed.Presenter;
+using Completed.Timer;
 using Completed.View;
 
 namespace Completed
@@ -26,8 +29,13 @@ namespace Completed
         private Player _player;
         private PlayerPresenter _playerPresenter;
         private GameManagerPresenter _gameManagerPresenter;
+        private CommandsPresenter _commandsPresenter;
         private MyInputHandler _myInputHandler;
-        
+
+        private ITimer _timer;
+        private ICommandLogger _inMemoryCommandLogger;
+        private ICommandLogger _consoleCommandLogger;
+
         private void Awake()
         {
             Init();
@@ -43,16 +51,15 @@ namespace Completed
             InitBoard();
             InitEnemies();
             InitUi();
+            InitCommandLogger();
             doingSetup = false;
         }
 
         private void InitInput()
         {
-            if (_myInputHandler == null)
-            {
-                _myInputHandler = GameObject.Find("MyInputHandler").GetComponent<MyInputHandler>();
-                _myInputHandler.commandPipeline.AddListener(HandleInput);
-            }
+            if (_myInputHandler != null) return;
+            _myInputHandler = GameObject.Find("MyInputHandler").GetComponent<MyInputHandler>();
+            _myInputHandler.commandPipeline.AddListener(HandleInput);
         }
 
         private static void InitLevel()
@@ -65,20 +72,20 @@ namespace Completed
 
         private void HandleInput(Command command)
         {
-            //Debug.Log($"*** HandleInput: {command}");
             if (IsPlayersTurn() && !_player.IsMoving())
             {
                 command.Execute(_player);
+                LogCommand(command);
             }
         }
 
-        private void InitUi()
+        private void LogCommand(Command command)
         {
-            var gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
-            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView);
-            _gameManagerPresenter.ShowCurrentDay(LevelManager.CurrentDay);
+            _inMemoryCommandLogger.LogCommand(command);
+            _commandsPresenter.LogCommand(command);
+            _consoleCommandLogger.LogCommand(command);
         }
-        
+
         private void InitPlayer()
         {
             if (_player == null)
@@ -103,7 +110,7 @@ namespace Completed
             playersTurn = false;
             TryMoveEnemies();
         }
-        
+
         private void HandlePlayerReachedExit()
         {
             IncreaseLevel();
@@ -134,11 +141,6 @@ namespace Completed
             enabled = false;
         }
 
-        private void InitEnemies()
-        {
-            _enemyManager = new EnemyManager(_boardManager.InstantiatedEnemies);
-        }
-
         private void InitBoard()
         {
             if (_boardManager == null)
@@ -148,6 +150,26 @@ namespace Completed
             _boardManager.SetupScene(LevelManager.CurrentDay);
         }
 
+        private void InitEnemies()
+        {
+            _enemyManager = new EnemyManager(_boardManager.InstantiatedEnemies);
+        }
+
+        private void InitUi()
+        {
+            var gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
+            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView);
+            _gameManagerPresenter.ShowCurrentDay(LevelManager.CurrentDay);
+        }
+
+        private void InitCommandLogger()
+        {
+            _inMemoryCommandLogger = new InMemoryCommandLogger(new UnityTimer());
+            _consoleCommandLogger = new ConsoleCommandLogger(new UnityTimer());
+            var commandsView = GameObject.Find("CommandsView").GetComponent<CommandsView>();
+            _commandsPresenter = new CommandsPresenter(commandsView);
+        }
+
         private void TryMoveEnemies()
         {
             StartCoroutine(MoveEnemies());
@@ -155,7 +177,7 @@ namespace Completed
 
         private IEnumerator MoveEnemies()
         {
-            Debug.Log("MoveEnemies");
+            //Debug.Log("MoveEnemies");
             enemiesMoving = true;
             yield return new WaitForSeconds(turnDelay);
 
