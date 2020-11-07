@@ -8,11 +8,12 @@ namespace Completed.Presenter
         private GameManagerView _gameManagerView;
         private GameManager _gameManager;
         
-        public GameManagerPresenter(GameManager gameManager, GameManagerView gameManagerView, ITimer timer)
+        public GameManagerPresenter(GameManager gameManager, GameManagerView gameManagerView, 
+            ITimer timer, ILevelManager levelManager)
         {
             _gameManager = gameManager;
             _gameManagerView = gameManagerView;
-            _gameManagerView.Init(timer);
+            _gameManagerView.Init(timer, levelManager);
         }
 
         public void ShowCurrentDay(int currentDay)

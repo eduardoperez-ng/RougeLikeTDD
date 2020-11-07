@@ -35,7 +35,8 @@ namespace Completed
         private ITimer _timer;
         private ICommandLogger _inMemoryCommandLogger;
         private ICommandLogger _consoleCommandLogger;
-        
+        private ILevelManager _levelManager;
+
         private void Awake()
         {
             Init();
@@ -77,14 +78,6 @@ namespace Completed
             }
         }
 
-        private static void InitLevel()
-        {
-            if (LevelManager.CurrentDay == 0)
-            {
-                LevelManager.CurrentDay = 1;
-            }
-        }
-
         private void LogCommand(Command command)
         {
             _inMemoryCommandLogger.LogCommand(command);
@@ -92,12 +85,21 @@ namespace Completed
             _consoleCommandLogger.LogCommand(command);
         }
 
+        private void InitLevel()
+        {
+            _levelManager = new LevelManager();
+            if (_levelManager.CurrentDay == 0)
+            {
+                _levelManager.CurrentDay = 1;
+            }
+        }
+
         private void InitPlayer()
         {
             if (_player == null)
             {
                 _player = FindObjectOfType<Player>();
-                _player.Init(LevelManager.GetPlayerFoodForCurrentDay());
+                _player.Init(StaticLevelManager.GetPlayerFoodForCurrentDay());
             }
 
             if (_playerPresenter == null)
@@ -125,14 +127,14 @@ namespace Completed
             StartCoroutine(LoadNextLevel());
         }
 
-        private static void IncreaseLevel()
+        private void IncreaseLevel()
         {
-            LevelManager.CurrentDay++;
+            _levelManager.CurrentDay++;
         }
 
         private void SavePlayerFood()
         {
-            LevelManager.CurrentPlayerFood = _player.Food;
+            StaticLevelManager.CurrentPlayerFood = _player.Food;
         }
 
         private IEnumerator LoadNextLevel()
@@ -143,8 +145,8 @@ namespace Completed
 
         public void GameOver()
         {
-            _gameManagerPresenter.ShowGameOver(LevelManager.CurrentDay);
-            LevelManager.CurrentDay = 1;
+            _gameManagerPresenter.ShowGameOver(_levelManager.CurrentDay);
+            _levelManager.CurrentDay = 1;
             enabled = false;
         }
 
@@ -154,7 +156,7 @@ namespace Completed
             {
                 _boardManager = GetComponent<BoardManager>();
             }
-            _boardManager.SetupScene(LevelManager.CurrentDay);
+            _boardManager.SetupScene(_levelManager.CurrentDay);
         }
 
         private void InitEnemies()
@@ -170,13 +172,13 @@ namespace Completed
         private void InitUi()
         {
             var gameManagerView = GameObject.Find("LevelImage").GetComponent<GameManagerView>(); 
-            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView, _timer);
-            _gameManagerPresenter.ShowCurrentDay(LevelManager.CurrentDay);
+            _gameManagerPresenter = new GameManagerPresenter(this, gameManagerView, _timer, _levelManager);
+            _gameManagerPresenter.ShowCurrentDay(_levelManager.CurrentDay);
         }
 
         private void InitCommandLogger()
         {
-            _inMemoryCommandLogger = new InMemoryCommandLogger();
+            _inMemoryCommandLogger = new InMemoryCommandLogger(_levelManager);
             _consoleCommandLogger = new ConsoleCommandLogger(_timer);
             var commandsView = GameObject.Find("CommandsView").GetComponent<CommandsView>();
             _commandsPresenter = new CommandsPresenter(commandsView);
@@ -189,7 +191,6 @@ namespace Completed
 
         private IEnumerator MoveEnemies()
         {
-            //Debug.Log("MoveEnemies");
             enemiesMoving = true;
             yield return new WaitForSeconds(turnDelay);
 

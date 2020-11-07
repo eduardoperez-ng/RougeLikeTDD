@@ -13,12 +13,15 @@ namespace Completed.View
         public Text currentDayText;
         public GameObject levelImage;
         public Button levelButton;
+        
         private float hideLevelImageDelay = 2f;
         private ITimer _timer;
+        private ILevelManager _levelManager;
         
-        public void Init(ITimer timer)
+        public void Init(ITimer timer, ILevelManager levelManager)
         {
             _timer = timer;
+            _levelManager = levelManager;
             
             if (levelText == null)
             {
@@ -37,8 +40,8 @@ namespace Completed.View
 
         public void ShowCurrentDay(int currentDay)
         {
-            levelText.text = $"Day {LevelManager.CurrentDay}";
-            currentDayText.text = $"day {LevelManager.CurrentDay}";
+            levelText.text = $"Day {currentDay}";
+            currentDayText.text = $"day {currentDay}";
             levelImage.SetActive(true);
             Invoke(nameof(HideLevelImage), hideLevelImageDelay);
         }

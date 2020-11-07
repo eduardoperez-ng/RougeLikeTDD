@@ -1,14 +1,13 @@
+using Completed.Interfaces;
+
 namespace Completed
 {
-    public static class LevelManager
+    public class LevelManager : ILevelManager
     {
-        private const int PlayerStartingFoodPoints = 100;
-        public static int CurrentDay { get; set; }
-        public static int CurrentPlayerFood { get; set; }
-
-        public static int GetPlayerFoodForCurrentDay()
+        public int CurrentDay
         {
-            return CurrentDay == 1 ? PlayerStartingFoodPoints : CurrentPlayerFood;
+            get => StaticLevelManager.CurrentDay;
+            set => StaticLevelManager.CurrentDay = value;
         }
     }
 }

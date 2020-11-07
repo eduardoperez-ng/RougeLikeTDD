@@ -5,17 +5,18 @@ namespace Completed.Commands.Logger
 {
     public class InMemoryCommandLogger : ICommandLogger
     {
-        // TODO: testear esta clase.
         private Dictionary<int, List<Command>> _executedCommands;
-
-        public InMemoryCommandLogger()
+        private ILevelManager _levelManager;
+        
+        public InMemoryCommandLogger(ILevelManager levelManager)
         {
             _executedCommands = new Dictionary<int, List<Command>>();
+            _levelManager = levelManager;
         }
 
         public void LogCommand(Command command)
         {
-            int currentDay = LevelManager.CurrentDay;
+            int currentDay = GetCurrentDay();
             if (_executedCommands.TryGetValue(currentDay, out var commands))
             {
                 commands.Add(command);
@@ -25,6 +26,20 @@ namespace Completed.Commands.Logger
                 _executedCommands.Add(currentDay, new List<Command>{command});
             }
         }
-        
+
+        private int GetCurrentDay()
+        {
+            return _levelManager.CurrentDay;
+        }
+
+        public IReadOnlyList<Command> CommandsForDay(int day)
+        {
+            if (_executedCommands.TryGetValue(day, out var commands))
+            {
+                return commands;
+            }
+
+            return null;
+        }
     }
 }
