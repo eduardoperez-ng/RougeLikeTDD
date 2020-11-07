@@ -19,11 +19,11 @@ namespace Completed
         // TODO: move this to a turn manager.
         [HideInInspector]
         public bool playersTurn = true;
+        private bool enemiesMoving;
 
         private BoardManager _boardManager;
         private EnemyManager _enemyManager;
-        
-        private bool enemiesMoving;
+
         private bool doingSetup = true;
 
         private Player _player;
@@ -37,6 +37,8 @@ namespace Completed
         private ICommandLogger _consoleCommandLogger;
         private ILevelManager _levelManager;
 
+        private PlayerGhost _playerGhost;
+        
         private void Awake()
         {
             Init();
@@ -54,6 +56,7 @@ namespace Completed
             InitInput();
             InitLevel();
             InitPlayer();
+            InitPlayerGhost();
             InitBoard();
             InitEnemies();
             InitTimer();
@@ -122,12 +125,12 @@ namespace Completed
 
         private void HandlePlayerReachedExit()
         {
-            IncreaseLevel();
+            IncreaseDay();
             SavePlayerFood();
             StartCoroutine(LoadNextLevel());
         }
 
-        private void IncreaseLevel()
+        private void IncreaseDay()
         {
             _levelManager.CurrentDay++;
         }
@@ -141,6 +144,18 @@ namespace Completed
         {
             yield return new WaitForSeconds(1f);
             SceneManager.LoadSceneAsync("Main");
+        }
+
+        private void InitPlayerGhost()
+        {
+            if (_playerGhost == null)
+            {
+                _playerGhost = FindObjectOfType<PlayerGhost>();
+                if (_playerGhost != null)
+                {
+                    _playerGhost.Init();
+                }
+            }
         }
 
         public void GameOver()

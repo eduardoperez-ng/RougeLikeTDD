@@ -7,7 +7,7 @@ public class CommandsView : MonoBehaviour
 
     public void UpdateView(string command)
     {
-        _commandText.text += $" {command}";
+        _commandText.text += $"{command}\n";
     }
     
     public void ClearView()

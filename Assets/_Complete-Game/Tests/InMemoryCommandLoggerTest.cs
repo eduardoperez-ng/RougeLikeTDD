@@ -5,7 +5,6 @@ using Completed.Commands.Logger;
 using Completed.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -47,7 +46,6 @@ namespace Tests
             levelManager.CurrentDay.Returns(1);
             
             var commandLogger = new InMemoryCommandLogger(levelManager);
-            
             commandLogger.LogCommand(new Command());
 
             var commandsLogged = commandLogger.CommandsForDay(levelManager.CurrentDay);
@@ -57,12 +55,61 @@ namespace Tests
             yield return null;
         }
         
-        // TODO: hacer un test que ejecutar varios commandos y
-        // validar que la lista tiene esos comandos.
-        
-        
-        // TODO: hacer un test que ejecutar varios commandos y
-        // para varios dias y las listas de comandos son correctas.
+        [UnityTest]
+        public IEnumerator Commands_Logged_For_One_Day_Pass()
+        {
+            var levelManager = Substitute.For<ILevelManager>();
+            var commandLogger = new InMemoryCommandLogger(levelManager);
+            var commandsToExecute = new List<Command>()
+            {
+                new MoveUpCommand(),
+                new MoveDownCommand(),
+                new MoveLeftCommand(),
+                new MoveRightCommand()
+            };
 
+            LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
+            
+            var commandsLogged= commandLogger.CommandsForDay(levelManager.CurrentDay);
+            Assert.AreEqual(commandsToExecute, commandsLogged);
+            yield return null;
+        }
+        
+        [UnityTest]
+        public IEnumerator Commands_Logged_For_Several_Days_Pass()
+        {
+            var levelManager = Substitute.For<ILevelManager>();
+            var commandLogger = new InMemoryCommandLogger(levelManager);
+            var commandsToExecuteForDayOne = new List<Command>()
+            {
+                new MoveUpCommand(),
+                new MoveDownCommand(),
+                new MoveLeftCommand(),
+                new MoveRightCommand()
+            };
+            var commandsToExecuteForDayTwo = new List<Command>()
+            {
+                new MoveDownCommand(),
+                new MoveUpCommand(),
+                new MoveRightCommand(),
+                new MoveLeftCommand()
+            };
+            
+            LogCommandsForDay(1, commandsToExecuteForDayOne, levelManager, commandLogger);
+            LogCommandsForDay(2, commandsToExecuteForDayTwo, levelManager, commandLogger);
+            
+            var commandsLogged= commandLogger.CommandsForDay(2);
+            Assert.AreEqual(commandsToExecuteForDayTwo, commandsLogged);
+            yield return null;
+        }
+
+        private void LogCommandsForDay(int day, List<Command> commands, ILevelManager levelManager, ICommandLogger commandLogger)
+        {
+            levelManager.CurrentDay.Returns(day);
+            foreach (var command in commands)
+            {
+                commandLogger.LogCommand(command);
+            }
+        }
     }
 }
