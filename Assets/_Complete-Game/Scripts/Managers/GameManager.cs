@@ -30,6 +30,7 @@ namespace Completed
         private PlayerPresenter _playerPresenter;
         private GameManagerPresenter _gameManagerPresenter;
         private CommandsPresenter _commandsPresenter;
+        private GhostManagerPresenter _ghostManagerPresenter;
         private MyInputHandler _myInputHandler;
 
         private ITimer _timer;
@@ -37,6 +38,7 @@ namespace Completed
         private ICommandLogger _consoleCommandLogger;
         private ILevelManager _levelManager;
 
+        private GhostManager _ghostManager;
         private PlayerGhost _playerGhost;
         
         private void Awake()
@@ -54,7 +56,7 @@ namespace Completed
             Debug.Log("GameManager::Init()");
             doingSetup = true;
             InitInput();
-            InitLevel();
+            InitLevelManager();
             InitPlayer();
             InitPlayerGhost();
             InitBoard();
@@ -62,6 +64,7 @@ namespace Completed
             InitTimer();
             InitUi();
             InitCommandLogger();
+            InitGhostManager();
             doingSetup = false;
         }
 
@@ -88,7 +91,7 @@ namespace Completed
             _consoleCommandLogger.LogCommand(command);
         }
 
-        private void InitLevel()
+        private void InitLevelManager()
         {
             _levelManager = new LevelManager();
             if (_levelManager.CurrentDay == 0)
@@ -156,6 +159,18 @@ namespace Completed
                     _playerGhost.Init();
                 }
             }
+        }
+
+        private void InitGhostManager()
+        {
+            _ghostManager = FindObjectOfType<GhostManager>();
+            if (_ghostManager != null)
+            {
+                _ghostManager.Init(_inMemoryCommandLogger, _playerGhost);
+            }
+            
+            var ghostManagerView = GameObject.Find("GhostManagerView").GetComponent<GhostManagerView>(); 
+            _ghostManagerPresenter = new GhostManagerPresenter(_ghostManager, ghostManagerView, _levelManager);
         }
 
         public void GameOver()

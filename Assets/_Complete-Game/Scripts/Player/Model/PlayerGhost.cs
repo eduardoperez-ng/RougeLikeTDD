@@ -10,7 +10,7 @@ namespace Completed
         public int wallDamage = 1;
         private Animator animator;
         
-        public void Init(int initialFoodPoint)
+        public override void Init()
         {
             InitAnimator();
             base.Init();

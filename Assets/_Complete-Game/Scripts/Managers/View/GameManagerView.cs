@@ -1,3 +1,4 @@
+using System;
 using Completed.Interfaces;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,6 +37,14 @@ namespace Completed.View
             
             levelButton.onClick.AddListener(LoadMainMenu);
             levelButton.gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (levelButton != null)
+            {
+                levelButton.onClick.RemoveAllListeners();
+            }
         }
 
         public void ShowCurrentDay(int currentDay)

@@ -6,11 +6,22 @@ namespace Completed
     {
         public GameObject gameManager; 
         public GameObject soundManager;
+        public GameObject ghostManager;
         
         private void Awake()
         {
+            CreateGhostManager();
             CreateGameManager();
             CreateSoundManager();
+        }
+
+        private void CreateGhostManager()
+        {
+            if (FindObjectOfType<GhostManager>() == null)
+            {
+                var shadowManagerInstance =  Instantiate(ghostManager);
+                DontDestroyOnLoad(shadowManagerInstance);
+            }
         }
 
         private void CreateGameManager()
