@@ -4,11 +4,14 @@ using Completed.Commands;
 using Completed.Commands.Logger;
 using Completed.Interfaces;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Completed
 {
     public class GhostManager : MonoBehaviour
     {
+        public GhostManagerEvent CommandExecutedEvent = new GhostManagerEvent();
+
         private InMemoryCommandLogger _commandLogger;
         private PlayerGhost _playerGhost;
 
@@ -35,6 +38,7 @@ namespace Completed
             foreach (var command in commands)
             {
                 command.Execute(_playerGhost);
+                CommandExecutedEvent?.Invoke(command.ToString());
                 yield return new WaitForSeconds(1);
             }
         }
@@ -44,4 +48,8 @@ namespace Completed
             StopAllCoroutines();
         }
     }
+    
+    [System.Serializable]
+    public class GhostManagerEvent : UnityEvent<string> {}
+
 }

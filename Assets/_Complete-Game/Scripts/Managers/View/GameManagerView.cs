@@ -1,4 +1,3 @@
-using System;
 using Completed.Interfaces;
 using UnityEngine;
 using UnityEngine.SceneManagement;

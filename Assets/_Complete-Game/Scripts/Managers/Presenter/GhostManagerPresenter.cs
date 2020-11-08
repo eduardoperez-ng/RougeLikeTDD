@@ -15,6 +15,8 @@ namespace Completed.Presenter
             _view = view;
             _view.Init(this);
             _levelManager = levelManager;
+            
+            _ghostManager.CommandExecutedEvent.AddListener(UpdateExecutedCommandList);
         }
 
         public void OnMoveGhostButtonClicked()
@@ -30,6 +32,10 @@ namespace Completed.Presenter
             _ghostManager.StopGhost();
             _view.UpdateGhostStatus("Stopped");
         }
-        
+
+        private void UpdateExecutedCommandList(string command)
+        {
+            _view.UpdateExecutedCommandList(command);
+        }
     }
 }

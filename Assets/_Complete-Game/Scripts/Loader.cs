@@ -19,7 +19,7 @@ namespace Completed
         {
             if (FindObjectOfType<GhostManager>() == null)
             {
-                var shadowManagerInstance =  Instantiate(ghostManager);
+                var shadowManagerInstance = Instantiate(ghostManager);
                 DontDestroyOnLoad(shadowManagerInstance);
             }
         }

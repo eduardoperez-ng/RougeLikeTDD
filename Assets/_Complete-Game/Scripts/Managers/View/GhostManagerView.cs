@@ -10,7 +10,8 @@ namespace Completed.View
         public Button moveGhostButton;
         public Button stopGhostButton;
         public Text ghostStatusText;
-
+        public Text executedCommandList;
+        
         private GhostManagerPresenter _ghostManagerPresenter;
         
         public void Init(GhostManagerPresenter ghostManagerPresenter)
@@ -32,6 +33,14 @@ namespace Completed.View
             if (status == "Stopped")
             {
                 ghostStatusText.color = Color.red;
+            }
+        }
+        
+        public void UpdateExecutedCommandList(string command)
+        {
+            if (executedCommandList != null)
+            {
+                executedCommandList.text += $"{command}\n";
             }
         }
 

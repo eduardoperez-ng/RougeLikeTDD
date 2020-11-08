@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Completed
 {
@@ -57,6 +58,5 @@ namespace Completed
                 other.gameObject.SetActive(false);
             }
         }
-
     }
 }
