@@ -3412,5 +3412,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerGhost
       objectReference: {fileID: 0}
+    - target: {fileID: 1199426603718570190, guid: e9fc814a75b6241c88ec27e7bb5c778b,
+        type: 3}
+      propertyPath: blockingLayer.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9fc814a75b6241c88ec27e7bb5c778b, type: 3}
