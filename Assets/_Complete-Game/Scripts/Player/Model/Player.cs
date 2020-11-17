@@ -28,7 +28,9 @@ namespace Completed
         public UnityEvent PlayerReachedExitEvent = new UnityEvent();
         public UnityEvent PlayerDeadEvent = new UnityEvent();
         public PlayerEvent PlayerCollisionEvent = new PlayerEvent();
-        
+
+        [SerializeField] private Vector2 _lastPosition;
+
         public void Init(int initialFoodPoint)
         {
             Food = initialFoodPoint;
@@ -58,12 +60,19 @@ namespace Completed
 
             CheckIfGameOver();
 
+            UpdateLastPosition();
+            
             EndTurn();
         }
 
         private void PublishMoveEvent()
         {
             PlayerMoveEvent?.Invoke();
+        }
+
+        private void UpdateLastPosition()
+        {
+            _lastPosition = transform.position;
         }
 
         private void EndTurn()
@@ -130,6 +139,11 @@ namespace Completed
         public bool IsMoving()
         {
             return Moving;
+        }
+
+        public bool IsInTheSamePosition()
+        {
+            return _lastPosition == (Vector2)transform.position;
         }
     }
 

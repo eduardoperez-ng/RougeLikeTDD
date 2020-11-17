@@ -15,5 +15,7 @@ namespace Completed.Commands.Presenter
         {
             _commandsView.UpdateView(command.ToString());
         }
+
+        public void RemoveLastLoggedCommand() {}
     }
 }

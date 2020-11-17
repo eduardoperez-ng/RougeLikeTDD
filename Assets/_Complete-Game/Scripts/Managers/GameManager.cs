@@ -146,9 +146,9 @@ namespace Completed
 
         private void HandlePlayerCollision(string collisionObjectName)
         {
-            if (collisionObjectName == "Wall")
+            if (collisionObjectName == "Wall" && _player.IsInTheSamePosition())
             {
-                
+                _inMemoryCommandLogger.RemoveLastLoggedCommand();
             }
         }
 

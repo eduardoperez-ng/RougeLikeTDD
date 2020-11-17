@@ -16,5 +16,7 @@ namespace Completed.Commands.Logger
         {
             Debug.Log($"{_timer.ElapsedTime}: {command}");
         }
+
+        public void RemoveLastLoggedCommand() {}
     }
 }

@@ -37,16 +37,15 @@ namespace Completed.Commands.Logger
             return _executedCommands.TryGetValue(day, out var commands) ? commands : null;
         }
 
-        public void RemoveLastLoggedCommand(int day)
+        public void RemoveLastLoggedCommand()
         {
             if (_executedCommands == null)
                 return;
 
-            if (_executedCommands.TryGetValue(1, out var commands))
+            if (_executedCommands.TryGetValue(GetCurrentDay(), out var commands))
             {
-                commands.RemoveAt(commands.Count-1);
+                commands.RemoveAt(commands.Count - 1);
             }
-            
         }
     }
 }

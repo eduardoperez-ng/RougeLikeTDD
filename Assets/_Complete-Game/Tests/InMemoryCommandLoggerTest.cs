@@ -118,7 +118,7 @@ namespace Tests
 
             LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
             
-            commandLogger.RemoveLastLoggedCommand(1);
+            commandLogger.RemoveLastLoggedCommand();
             
             Assert.AreEqual(commandsToExecute.Count-1, commandLogger.CommandsForDay(1).Count);
 
@@ -137,7 +137,7 @@ namespace Tests
 
             LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
             
-            commandLogger.RemoveLastLoggedCommand(1);
+            commandLogger.RemoveLastLoggedCommand();
             
             Assert.AreEqual(0, commandLogger.CommandsForDay(1).Count);
             yield return null;
@@ -152,7 +152,7 @@ namespace Tests
 
             LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
             
-            commandLogger.RemoveLastLoggedCommand(1);
+            commandLogger.RemoveLastLoggedCommand();
             
             Assert.IsNull(commandLogger.CommandsForDay(1));
             yield return null;
@@ -173,7 +173,7 @@ namespace Tests
 
             LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
             
-            commandLogger.RemoveLastLoggedCommand(1);
+            commandLogger.RemoveLastLoggedCommand();
 
             var commandsLogged= commandLogger.CommandsForDay(1);
 
