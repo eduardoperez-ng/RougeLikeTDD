@@ -117,6 +117,7 @@ namespace Completed
             _player.PlayerTurnEndEvent.AddListener(HandleEnemiesTurn);
             _player.PlayerReachedExitEvent.AddListener(HandlePlayerReachedExit);
             _player.PlayerDeadEvent.AddListener(GameOver);
+            _player.PlayerCollisionEvent.AddListener(HandlePlayerCollision);
         }
 
         public void HandleEnemiesTurn()
@@ -141,6 +142,14 @@ namespace Completed
         private void SavePlayerFood()
         {
             StaticLevelManager.CurrentPlayerFood = _player.Food;
+        }
+
+        private void HandlePlayerCollision(string collisionObjectName)
+        {
+            if (collisionObjectName == "Wall")
+            {
+                
+            }
         }
 
         private IEnumerator LoadNextLevel()

@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace Completed.Interfaces
 {
     public interface IGameManager

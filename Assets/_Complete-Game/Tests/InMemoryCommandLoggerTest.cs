@@ -102,6 +102,86 @@ namespace Tests
             Assert.AreEqual(commandsToExecuteForDayTwo, commandsLogged);
             yield return null;
         }
+        
+        [UnityTest]
+        public IEnumerator RemoveLastLoggedCommand_Leaves_A_Shorter_List_Of_Commands()
+        {
+            var levelManager = Substitute.For<ILevelManager>();
+            var commandLogger = new InMemoryCommandLogger(levelManager);
+            var commandsToExecute = new List<Command>()
+            {
+                new MoveUpCommand(),
+                new MoveDownCommand(),
+                new MoveLeftCommand(),
+                new MoveRightCommand()
+            };
+
+            LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
+            
+            commandLogger.RemoveLastLoggedCommand(1);
+            
+            Assert.AreEqual(commandsToExecute.Count-1, commandLogger.CommandsForDay(1).Count);
+
+            yield return null;
+        }
+        
+        [UnityTest]
+        public IEnumerator RemoveLastLoggedCommand_Leaves_The_List_Empty()
+        {
+            var levelManager = Substitute.For<ILevelManager>();
+            var commandLogger = new InMemoryCommandLogger(levelManager);
+            var commandsToExecute = new List<Command>()
+            {
+                new MoveUpCommand(),
+            };
+
+            LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
+            
+            commandLogger.RemoveLastLoggedCommand(1);
+            
+            Assert.AreEqual(0, commandLogger.CommandsForDay(1).Count);
+            yield return null;
+        }
+        
+        [UnityTest]
+        public IEnumerator RemoveLastLoggedCommand_Does_Nothing_Is_There_Are_No_Commands()
+        {
+            var levelManager = Substitute.For<ILevelManager>();
+            var commandLogger = new InMemoryCommandLogger(levelManager);
+            var commandsToExecute = new List<Command>();
+
+            LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
+            
+            commandLogger.RemoveLastLoggedCommand(1);
+            
+            Assert.IsNull(commandLogger.CommandsForDay(1));
+            yield return null;
+        }
+        
+        [UnityTest]
+        public IEnumerator RemoveLastLoggedCommand_Removes_The_Last_Command()
+        {
+            var levelManager = Substitute.For<ILevelManager>();
+            var commandLogger = new InMemoryCommandLogger(levelManager);
+            var commandsToExecute = new List<Command>()
+            {
+                new MoveUpCommand(),
+                new MoveDownCommand(),
+                new MoveLeftCommand(),
+                new MoveRightCommand()
+            };
+
+            LogCommandsForDay(1, commandsToExecute, levelManager, commandLogger);
+            
+            commandLogger.RemoveLastLoggedCommand(1);
+
+            var commandsLogged= commandLogger.CommandsForDay(1);
+
+            commandsToExecute.RemoveAt(commandsToExecute.Count-1);
+            
+            Assert.AreEqual(commandsToExecute, commandsLogged);
+            yield return null;
+        }
 
         private void LogCommandsForDay(int day, List<Command> commands, ILevelManager levelManager, ICommandLogger commandLogger)
         {

@@ -34,12 +34,19 @@ namespace Completed.Commands.Logger
 
         public IReadOnlyList<Command> CommandsForDay(int day)
         {
-            if (_executedCommands.TryGetValue(day, out var commands))
-            {
-                return commands;
-            }
+            return _executedCommands.TryGetValue(day, out var commands) ? commands : null;
+        }
 
-            return null;
+        public void RemoveLastLoggedCommand(int day)
+        {
+            if (_executedCommands == null)
+                return;
+
+            if (_executedCommands.TryGetValue(1, out var commands))
+            {
+                commands.RemoveAt(commands.Count-1);
+            }
+            
         }
     }
 }

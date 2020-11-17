@@ -39,24 +39,5 @@ namespace Completed
             animator.SetTrigger(PlayerChop);
         }
         
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.CompareTag("Exit"))
-            {
-                enabled = false;
-                return;
-            }
-            
-            if (other.CompareTag("Food"))
-            {
-                other.gameObject.SetActive(false);
-                return;
-            }
-            
-            if (other.CompareTag("Soda"))
-            {
-                other.gameObject.SetActive(false);
-            }
-        }
     }
 }

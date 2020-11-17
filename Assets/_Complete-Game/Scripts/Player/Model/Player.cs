@@ -77,6 +77,7 @@ namespace Completed
             if (hitWall != null)
             {
                 hitWall.DamageWall(wallDamage);
+                PlayerCollisionEvent?.Invoke("Wall");
             }
 
             animator.SetTrigger(PlayerChop);
